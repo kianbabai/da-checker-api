@@ -1,5 +1,6 @@
 const express = require('express');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 const app = express();
 
 app.use(express.json());
@@ -8,7 +9,9 @@ app.post('/domain-analysis', async (req, res) => {
   const { domain } = req.body;
 
   try {
+    // Launch Puppeteer with @sparticuz/chromium
     const browser = await puppeteer.launch({
+      executablePath: await chromium.executablePath(), // Use the Chromium binary
       headless: true,
       args: [
         '--no-sandbox',
@@ -17,6 +20,7 @@ app.post('/domain-analysis', async (req, res) => {
         '--disable-accelerated-2d-canvas',
         '--disable-gpu',
         '--window-size=1920,1080',
+        ...chromium.args, // Add Chromium-specific args
       ],
     });
 
